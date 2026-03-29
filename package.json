@@ -1,0 +1,13 @@
+{
+  "name": "goevent",
+  "private": true,
+  "workspaces": [
+    "my-design-system-app"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=my-design-system-app",
+    "build": "npm run build --workspace=my-design-system-app",
+    "start": "npm run start --workspace=my-design-system-app",
+    "lint": "npm run lint --workspace=my-design-system-app"
+  }
+}

@@ -1,0 +1,9 @@
+.vercel
+.env*.local
+node_modules/
+.next/
+npm-cache/
+tmp/
+exports/
+*.log
+tmp_hokkaido_frame.png

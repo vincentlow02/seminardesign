@@ -5,6 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { WeaveAiDynamicBackground } from "@/components/weave/WeaveAiDynamicBackground";
 import { storeGuideOpenTransition } from "@/components/weave/guideOpenTransition";
+import {
+  WEAVE_PARTNER_LOCATION_EVENT,
+  getPartnerLocationFallback,
+  getStoredPartnerLocation,
+  normalizePartnerLocation,
+  setStoredPartnerLocation,
+} from "@/components/weave/partnerLocation";
 import { WeavePromptBar } from "@/components/weave/WeavePromptBar";
 import { useAdaptivePageScale } from "@/components/weave/useAdaptivePageScale";
 import { SidebarChatItem, addSearchSidebarChat, getHomeSidebarChats, removeHomeSidebarChat } from "@/components/weave/sidebarChats";
@@ -44,7 +51,7 @@ const HOME_COPY: Record<
   EN: {
     sidebar: { saved: "Saved", home: "Home", discover: "Discover", chats: "Chats" },
     header: {
-      location: "Partner location appears here",
+      location: getPartnerLocationFallback("EN"),
       intro: "Let your next journey begin here",
     },
     chips: ["Cultural Experiences", "International Travel", "Domestic Travel", "Natural Spots", "Backpacking"],
@@ -91,7 +98,7 @@ const HOME_COPY: Record<
   JA: {
     sidebar: { saved: "保存", home: "ホーム", discover: "発見", chats: "チャット" },
     header: {
-      location: "相手の位置情報がここに表示されます",
+      location: getPartnerLocationFallback("JA"),
       intro: "次の旅はここから始まる",
     },
     chips: ["文化体験", "海外旅行", "国内旅行", "自然スポット", "バックパッキング"],
@@ -138,7 +145,7 @@ const HOME_COPY: Record<
   ZH: {
     sidebar: { saved: "收藏", home: "主页", discover: "发现", chats: "聊天" },
     header: {
-      location: "这里显示对方的位置信息",
+      location: getPartnerLocationFallback("ZH"),
       intro: "让你的下一段旅程从这里开始",
     },
     chips: ["文化体验", "国际旅行", "国内旅行", "自然景点", "背包旅行"],
@@ -2039,6 +2046,7 @@ export function WeaveAiHomePage() {
   const [isNavigating, setIsNavigating] = useState(false);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const [language, setLanguage] = useState<WeaveLanguage>("EN");
+  const [partnerLocation, setPartnerLocation] = useState<string | null>(null);
   const [journeyTransition, setJourneyTransition] = useState<{ active: boolean; query: string }>({
     active: false,
     query: "",
@@ -2090,6 +2098,31 @@ export function WeaveAiHomePage() {
     if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("saved") === "1") {
       setActiveNav("saved");
     }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const queryLocation = normalizePartnerLocation(params.get("partnerLocation"));
+
+    if (queryLocation) {
+      setStoredPartnerLocation(queryLocation);
+      setPartnerLocation(queryLocation);
+    } else {
+      setPartnerLocation(getStoredPartnerLocation());
+    }
+
+    const handlePartnerLocationChange = (event: Event) => {
+      setPartnerLocation((event as CustomEvent<string | null>).detail ?? null);
+    };
+
+    window.addEventListener(WEAVE_PARTNER_LOCATION_EVENT, handlePartnerLocationChange);
+    return () => {
+      window.removeEventListener(WEAVE_PARTNER_LOCATION_EVENT, handlePartnerLocationChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -2317,7 +2350,7 @@ export function WeaveAiHomePage() {
                       : "text-white/72"
                 }`}
               >
-                {copy.header.location}
+                {partnerLocation ?? copy.header.location}
               </p>
             </div>
 

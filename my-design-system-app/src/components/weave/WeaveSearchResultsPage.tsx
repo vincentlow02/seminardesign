@@ -401,6 +401,7 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
   const router = useRouter();
   const { wrapperStyle } = useAdaptivePageScale();
   const [language, setLanguage] = useState<WeaveLanguage>("EN");
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const hokkaidoVideoRef = useRef<HTMLVideoElement | null>(null);
   const finlandVideoRef = useRef<HTMLVideoElement | null>(null);
   const fullscreenVideoRef = useRef<HTMLVideoElement | null>(null);
@@ -435,6 +436,19 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
 
     window.addEventListener(WEAVE_LANGUAGE_EVENT, handleLanguageChange);
     return () => window.removeEventListener(WEAVE_LANGUAGE_EVENT, handleLanguageChange);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const syncViewport = () => setIsMobileViewport(mediaQuery.matches);
+
+    syncViewport();
+    mediaQuery.addEventListener("change", syncViewport);
+    return () => mediaQuery.removeEventListener("change", syncViewport);
   }, []);
 
   const searchUiLabels = useMemo(() => {
@@ -925,7 +939,7 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
             <video
               ref={hokkaidoVideoRef}
               className="h-full w-full object-cover opacity-95 transition-transform duration-700 group-hover:scale-[1.035]"
-              autoPlay
+              autoPlay={!isMobileViewport}
               loop
               muted
               onLoadedData={(event) => {
@@ -938,7 +952,7 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
               onPlay={() => setIsPlaying(true)}
               onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
               playsInline
-              preload="auto"
+              preload={isMobileViewport ? "metadata" : "auto"}
               poster="/preview/hokkaido-first-frame.jpg"
               src={HOKKAIDO_VIDEO_SRC}
             />
@@ -965,7 +979,7 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
           <video
             ref={finlandVideoRef}
             className="h-full w-full object-cover opacity-92 transition-transform duration-700 group-hover:scale-[1.035]"
-            autoPlay
+            autoPlay={!isMobileViewport}
             loop
             muted
             onLoadedData={(event) => {
@@ -978,7 +992,7 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
             onPlay={() => setFinlandPlaying(true)}
             onTimeUpdate={(event) => setFinlandCurrentTime(event.currentTarget.currentTime)}
             playsInline
-            preload="auto"
+            preload={isMobileViewport ? "metadata" : "auto"}
             poster="/preview/finland-first-frame.jpg"
             src={FINLAND_VIDEO_SRC}
           />
@@ -1420,37 +1434,37 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
 
         <nav className="pointer-events-auto fixed inset-x-0 bottom-7 z-40 flex justify-center px-6 md:hidden">
           <div className="flex w-full max-w-[376px] items-center rounded-[32px] border border-[#d9dde6] bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(246,245,242,0.92)_100%)] px-4 py-3 backdrop-blur-2xl shadow-[0_22px_50px_-28px_rgba(15,23,42,0.24)]">
-            <button className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-[#a6acb7]" onClick={() => setActiveNav("home")} type="button">
+            <button className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-[#a6acb7]" onClick={() => setActiveNav("home")} style={{ touchAction: "manipulation" }} type="button">
               <div className={`flex h-11 w-11 items-center justify-center rounded-[18px] transition-colors ${activeNav === "home" ? "border border-[#d9dde6] bg-white text-[#202228] shadow-[0_10px_20px_-16px_rgba(0,0,0,0.18)]" : "text-[#a6acb7]"}`}>
                 <IconSearch />
               </div>
               <span className={`text-[10px] font-medium ${activeNav === "home" ? "text-[#202228]" : "text-[#a6acb7]"}`}>{searchUiLabels.nav.home}</span>
             </button>
-            <button className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-[#a6acb7]" onClick={() => setActiveNav("saved")} type="button">
+            <button className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-[#a6acb7]" onClick={() => setActiveNav("saved")} style={{ touchAction: "manipulation" }} type="button">
               <div className={`flex h-11 w-11 items-center justify-center rounded-[18px] transition-colors ${activeNav === "saved" ? "border border-[#d9dde6] bg-white text-[#202228] shadow-[0_10px_20px_-16px_rgba(0,0,0,0.18)]" : "text-[#a6acb7]"}`}>
                 <IconStar />
               </div>
               <span className={`text-[10px] font-medium ${activeNav === "saved" ? "text-[#202228]" : "text-[#a6acb7]"}`}>{searchUiLabels.nav.saved}</span>
             </button>
-            <button className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-[#a6acb7]" onClick={() => setActiveNav("discover")} type="button">
+            <button className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-[#a6acb7]" onClick={() => setActiveNav("discover")} style={{ touchAction: "manipulation" }} type="button">
               <div className={`flex h-11 w-11 items-center justify-center rounded-[18px] transition-colors ${activeNav === "discover" ? "border border-[#d9dde6] bg-white text-[#202228] shadow-[0_10px_20px_-16px_rgba(0,0,0,0.18)]" : "text-[#a6acb7]"}`}>
                 <IconCompass />
               </div>
               <span className={`text-[10px] font-medium ${activeNav === "discover" ? "text-[#202228]" : "text-[#a6acb7]"}`}>{searchUiLabels.nav.discover}</span>
             </button>
-            <button
+            <Link
               className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-[#a6acb7]"
+              href="/home"
               onClick={() => {
                 setHomeChats(addNewSidebarChat());
-                router.push("/home");
               }}
-              type="button"
+              style={{ touchAction: "manipulation" }}
             >
               <div className="flex h-11 w-11 items-center justify-center rounded-[18px] text-[#a6acb7] transition-colors">
                 <IconUser />
               </div>
               <span className="text-[10px] font-medium text-[#a6acb7]">Profile</span>
-            </button>
+            </Link>
           </div>
         </nav>
       </div>
@@ -1601,7 +1615,7 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
                 onLoadedData={(event) => primeVideoCover(event.currentTarget)}
                 playsInline
                 poster={activeFullscreenPoster}
-                preload="auto"
+                preload="metadata"
                 src={activeFullscreenDossier.src}
               />
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.54)_0%,rgba(0,0,0,0.02)_38%,rgba(0,0,0,0.64)_100%)]" />

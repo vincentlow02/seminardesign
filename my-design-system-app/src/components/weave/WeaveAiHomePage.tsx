@@ -44,7 +44,7 @@ const HOME_COPY: Record<
   EN: {
     sidebar: { saved: "Saved", home: "Home", discover: "Discover", chats: "Chats" },
     header: {
-      location: "Iskandar Puteri, Estuari, Johor, Malaysia",
+      location: "Partner location appears here",
       intro: "Let your next journey begin here",
     },
     chips: ["Cultural Experiences", "International Travel", "Domestic Travel", "Natural Spots", "Backpacking"],
@@ -91,7 +91,7 @@ const HOME_COPY: Record<
   JA: {
     sidebar: { saved: "保存", home: "ホーム", discover: "発見", chats: "チャット" },
     header: {
-      location: "イスカンダル・プテリ、エストゥアリ、ジョホール、マレーシア",
+      location: "相手の位置情報がここに表示されます",
       intro: "次の旅はここから始まる",
     },
     chips: ["文化体験", "海外旅行", "国内旅行", "自然スポット", "バックパッキング"],
@@ -138,7 +138,7 @@ const HOME_COPY: Record<
   ZH: {
     sidebar: { saved: "收藏", home: "主页", discover: "发现", chats: "聊天" },
     header: {
-      location: "马来西亚 柔佛州 伊斯干达公主城 Estuari",
+      location: "这里显示对方的位置信息",
       intro: "让你的下一段旅程从这里开始",
     },
     chips: ["文化体验", "国际旅行", "国内旅行", "自然景点", "背包旅行"],

@@ -405,6 +405,10 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
   const hokkaidoVideoRef = useRef<HTMLVideoElement | null>(null);
   const finlandVideoRef = useRef<HTMLVideoElement | null>(null);
   const fullscreenVideoRef = useRef<HTMLVideoElement | null>(null);
+  const cardPlaybackBeforeFullscreenRef = useRef({
+    finland: false,
+    hokkaido: false,
+  });
   const touchStartXRef = useRef<number | null>(null);
   const [activeNav, setActiveNav] = useState<"home" | "saved" | "discover">("home");
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
@@ -1110,6 +1114,37 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
     fullscreenDestination === "finland"
       ? "/preview/finland-first-frame.jpg"
       : "/preview/hokkaido-first-frame.jpg";
+
+  useEffect(() => {
+    const hokkaidoVideo = hokkaidoVideoRef.current;
+    const finlandVideo = finlandVideoRef.current;
+
+    if (fullscreenDestination) {
+      cardPlaybackBeforeFullscreenRef.current = {
+        finland: Boolean(finlandVideo && !finlandVideo.paused),
+        hokkaido: Boolean(hokkaidoVideo && !hokkaidoVideo.paused),
+      };
+
+      hokkaidoVideo?.pause();
+      finlandVideo?.pause();
+      setIsPlaying(false);
+      setFinlandPlaying(false);
+      return;
+    }
+
+    if (cardPlaybackBeforeFullscreenRef.current.hokkaido && hokkaidoVideo) {
+      void hokkaidoVideo.play().catch(() => {});
+    }
+
+    if (cardPlaybackBeforeFullscreenRef.current.finland && finlandVideo) {
+      void finlandVideo.play().catch(() => {});
+    }
+
+    cardPlaybackBeforeFullscreenRef.current = {
+      finland: false,
+      hokkaido: false,
+    };
+  }, [fullscreenDestination]);
 
   useEffect(() => {
     if (!fullscreenDestination) {

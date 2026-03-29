@@ -265,45 +265,48 @@ function LanguageSwitcher({
   language,
   onLanguageChange,
 }: Pick<SharedProps, "language" | "onLanguageChange">) {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const cycleLanguage = () => {
+    const order: WeaveLanguage[] = ["EN", "JA", "ZH"];
+    const currentIndex = order.indexOf(language);
+    const nextLanguage = order[(currentIndex + 1) % order.length];
+    onLanguageChange(nextLanguage);
+  };
 
   return (
-    <div className="relative pointer-events-auto">
+    <div className="relative z-[80] pointer-events-auto">
       <button
-        aria-expanded={menuOpen}
-        aria-haspopup="menu"
-        className="weave-glass-panel flex min-w-[62px] items-center justify-between gap-2 rounded-full px-3 py-2 text-[11px] font-medium tracking-[0.18em] transition-transform duration-300 hover:scale-105 md:text-xs"
-        onClick={() => setMenuOpen((open) => !open)}
+        aria-expanded={false}
+        className="weave-glass-panel flex min-w-[62px] touch-manipulation items-center justify-between gap-2 rounded-full px-3 py-2 text-[11px] font-medium tracking-[0.18em] transition-transform duration-300 hover:scale-105 md:text-xs"
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          cycleLanguage();
+        }}
+        onPointerDown={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+        onPointerUp={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+        onTouchStart={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+        onTouchEnd={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          cycleLanguage();
+        }}
+        style={{ touchAction: "manipulation" }}
         type="button"
       >
         <span>{language}</span>
-        <svg aria-hidden="true" className={`h-3.5 w-3.5 transition-transform ${menuOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
+        <svg aria-hidden="true" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
           <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
-
-      <div
-        className={`absolute right-0 top-[calc(100%+10px)] w-[92px] rounded-[18px] border border-white/14 bg-black/28 p-1.5 text-white/88 shadow-[0_18px_40px_-24px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-all duration-200 ${
-          menuOpen ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-1.5 opacity-0"
-        }`}
-      >
-        {(["EN", "JA", "ZH"] as const).map((option) => (
-          <button
-            key={option}
-            className={`flex w-full items-center justify-between rounded-[12px] px-3 py-2 text-left text-[11px] tracking-[0.18em] transition ${
-              language === option ? "bg-white/12 text-white" : "text-white/72 hover:bg-white/8 hover:text-white"
-            }`}
-            onClick={() => {
-              onLanguageChange(option);
-              setMenuOpen(false);
-            }}
-            type="button"
-          >
-            <span>{option}</span>
-            {language === option ? <span className="text-[9px] tracking-[0.16em] text-white/52">ON</span> : null}
-          </button>
-        ))}
-      </div>
     </div>
   );
 }
@@ -525,7 +528,7 @@ function SecondScreen(
           loop
           muted={!isActive || !soundOn}
           playsInline
-          preload="none"
+          preload="auto"
           ref={secondVideoRef}
           src={shouldLoad ? "/video-project-2.mp4" : undefined}
         />
@@ -616,7 +619,7 @@ function ThirdScreen({
           loop
           muted={!isActive || !soundOn}
           playsInline
-          preload="none"
+          preload="auto"
           ref={thirdVideoRef}
           src={shouldLoad ? "/Video Project3.mp4" : undefined}
         />
@@ -724,8 +727,8 @@ export function WeaveLandingPage() {
   const [conditionLabel, setConditionLabel] = useState(LANDING_COPY.EN.currentConditionLoading);
   const [loadedScreens, setLoadedScreens] = useState<Record<1 | 2 | 3, boolean>>({
     1: true,
-    2: false,
-    3: false,
+    2: true,
+    3: true,
   });
 
   useEffect(() => {

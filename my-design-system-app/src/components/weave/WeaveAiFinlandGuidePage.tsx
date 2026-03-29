@@ -355,7 +355,7 @@ export function WeaveAiFinlandGuidePage() {
   return (
     <div className="h-screen w-full overflow-hidden bg-[#080913] antialiased selection:bg-indigo-400/20">
       <div className="flex text-white" style={wrapperStyle}>
-        <aside className="relative z-20 flex h-full w-[90px] shrink-0 flex-col items-center border-r border-white/10 bg-[linear-gradient(180deg,rgba(34,38,46,0.48)_0%,rgba(26,30,38,0.40)_100%)] py-6 text-white backdrop-blur-xl shadow-[6px_0_28px_-20px_rgba(0,0,0,0.16)]">
+        <aside className="relative z-20 hidden h-full w-[90px] shrink-0 flex-col items-center border-r border-white/10 bg-[linear-gradient(180deg,rgba(34,38,46,0.48)_0%,rgba(26,30,38,0.40)_100%)] py-6 text-white backdrop-blur-xl shadow-[6px_0_28px_-20px_rgba(0,0,0,0.16)] md:flex">
           <div className="flex w-full flex-col items-center gap-3 px-4">
             <Link
               aria-label="Back to home"
@@ -368,11 +368,18 @@ export function WeaveAiFinlandGuidePage() {
         </aside>
 
         <main className="relative flex-1 overflow-y-auto">
+          <Link
+            aria-label="Back to home"
+            className="fixed left-4 top-4 z-30 flex h-11 w-11 items-center justify-center rounded-full border border-white/14 bg-[rgba(15,18,30,0.72)] text-white/78 shadow-[0_14px_36px_-20px_rgba(0,0,0,0.7)] backdrop-blur-xl transition-colors hover:bg-[rgba(24,29,46,0.9)] hover:text-white md:hidden"
+            href="/home"
+          >
+            <IconBack />
+          </Link>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(76,66,170,0.28),transparent_22%),radial-gradient(circle_at_70%_14%,rgba(103,80,255,0.16),transparent_20%),radial-gradient(circle_at_60%_82%,rgba(120,150,255,0.10),transparent_24%),linear-gradient(180deg,#090a16_0%,#100f22_42%,#171734_100%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(4,6,14,0.28)_58%,rgba(4,6,14,0.64)_100%)]" />
           <div className="weave-ai-grain absolute inset-0 opacity-[0.08]" />
 
-          <div className="relative z-10 mx-auto max-w-[1380px] px-8 py-10 md:px-12 md:py-12 lg:px-16">
+          <div className="relative z-10 mx-auto max-w-[1380px] px-4 py-20 md:px-12 md:py-12 lg:px-16">
             {openingPayload && targetRect ? (
               <div className="pointer-events-none fixed inset-0 z-[140]">
                 <div className="absolute inset-0 bg-[rgba(7,9,18,0.18)] backdrop-blur-[3px]" />

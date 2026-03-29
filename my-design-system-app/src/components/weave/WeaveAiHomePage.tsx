@@ -282,6 +282,15 @@ function IconCompass() {
   );
 }
 
+function IconUser() {
+  return (
+    <svg aria-hidden="true" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+      <path d="M12 12a4.25 4.25 0 1 0 0-8.5 4.25 4.25 0 0 0 0 8.5Z" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M4.5 20a7.5 7.5 0 0 1 15 0" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function IconSun() {
   return (
     <svg aria-hidden="true" className="h-6 w-6 text-yellow-500" fill="none" stroke="currentColor" strokeWidth="1.7" viewBox="0 0 24 24">
@@ -397,6 +406,51 @@ function ThemeFloatingControls({
   );
 }
 
+function MobileBottomNav({
+  activeNav,
+  labels,
+  onDiscover,
+  onHome,
+  onProfile,
+  onSaved,
+}: {
+  activeNav: "home" | "saved" | "discover";
+  labels: { saved: string; home: string; discover: string };
+  onDiscover: () => void;
+  onHome: () => void;
+  onProfile: () => void;
+  onSaved: () => void;
+}) {
+  const itemClassName = "flex min-w-0 flex-1 flex-col items-center gap-1.5";
+
+  return (
+    <nav className="pointer-events-auto fixed inset-x-0 bottom-7 z-40 flex justify-center px-6 md:hidden">
+      <div className="flex w-full max-w-[376px] items-center rounded-[32px] border border-white/18 bg-[linear-gradient(180deg,rgba(102,132,164,0.26)_0%,rgba(75,102,132,0.18)_100%)] px-4 py-3 text-white/72 backdrop-blur-2xl shadow-[0_22px_50px_-28px_rgba(7,15,26,0.5)]">
+        <button className={itemClassName} onClick={onHome} type="button">
+          <SidebarIcon active={activeNav === "home"} label={labels.home}>
+            <IconSearch />
+          </SidebarIcon>
+        </button>
+        <button className={itemClassName} onClick={onSaved} type="button">
+          <SidebarIcon active={activeNav === "saved"} label={labels.saved}>
+            <IconStar />
+          </SidebarIcon>
+        </button>
+        <button className={itemClassName} onClick={onDiscover} type="button">
+          <SidebarIcon active={activeNav === "discover"} label={labels.discover}>
+            <IconCompass />
+          </SidebarIcon>
+        </button>
+        <button className={itemClassName} onClick={onProfile} type="button">
+          <SidebarIcon label="Profile">
+            <IconUser />
+          </SidebarIcon>
+        </button>
+      </div>
+    </nav>
+  );
+}
+
 function GPTIcon({ className = "h-5 w-5" }: { className?: string }) {
   return (
     <svg aria-hidden="true" className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -419,10 +473,12 @@ function ExperienceRadar({
   accentClassName = "text-blue-400",
   gridStroke = "rgba(255,255,255,0.1)",
   labelFill = "rgba(255,255,255,0.6)",
+  labelFontSize = 7.5,
 }: {
   accentClassName?: string;
   gridStroke?: string;
   labelFill?: string;
+  labelFontSize?: number;
 }) {
   return (
     <svg viewBox="-25 -25 150 150" className={`h-full w-full ${accentClassName}`}>
@@ -434,11 +490,11 @@ function ExperienceRadar({
       <line x1="50" y1="50" x2="22" y2="95" stroke={gridStroke} strokeWidth="1" />
       <line x1="50" y1="50" x2="5" y2="38" stroke={gridStroke} strokeWidth="1" />
       <polygon points="50,15 85,45 60,80 30,70 15,38" className="fill-current stroke-current" fillOpacity="0.2" strokeWidth="2" />
-      <text x="50" y="-4" fontSize="7.5" fontWeight="500" textAnchor="middle" fill={labelFill}>Adventure</text>
-      <text x="100" y="42" fontSize="7.5" fontWeight="500" textAnchor="start" fill={labelFill}>Culture</text>
-      <text x="75" y="108" fontSize="7.5" fontWeight="500" textAnchor="middle" fill={labelFill}>Social</text>
-      <text x="25" y="108" fontSize="7.5" fontWeight="500" textAnchor="middle" fill={labelFill}>Relaxation</text>
-      <text x="0" y="42" fontSize="7.5" fontWeight="500" textAnchor="end" fill={labelFill}>Food</text>
+      <text x="50" y="-4" fontSize={labelFontSize} fontWeight="500" textAnchor="middle" fill={labelFill}>Adventure</text>
+      <text x="100" y="42" fontSize={labelFontSize} fontWeight="500" textAnchor="start" fill={labelFill}>Culture</text>
+      <text x="75" y="108" fontSize={labelFontSize} fontWeight="500" textAnchor="middle" fill={labelFill}>Social</text>
+      <text x="25" y="108" fontSize={labelFontSize} fontWeight="500" textAnchor="middle" fill={labelFill}>Relaxation</text>
+      <text x="0" y="42" fontSize={labelFontSize} fontWeight="500" textAnchor="end" fill={labelFill}>Food</text>
     </svg>
   );
 }
@@ -721,9 +777,9 @@ export function DiscoverJournalView() {
 
   return (
     <section className="relative h-full flex-1 overflow-y-auto bg-[#f8f9fa] text-slate-900">
-      <div className="mx-auto flex min-h-full max-w-[1760px] items-start justify-center px-10 pb-20 pt-10">
-        <article className="w-full max-w-[1552px] rounded-[7px] bg-white shadow-[0_16px_22.1px_6px_rgba(0,0,0,0.06)]">
-          <div className="flex items-end gap-[27px] px-[28px] pt-[32px]">
+      <div className="mx-auto flex min-h-full max-w-[1760px] items-start justify-center px-4 pb-32 pt-5 sm:px-6 md:px-10 md:pb-20 md:pt-10">
+        <article className="w-full max-w-[1552px] rounded-[28px] bg-white shadow-[0_18px_42px_-24px_rgba(15,23,42,0.14)] md:rounded-[7px] md:shadow-[0_16px_22.1px_6px_rgba(0,0,0,0.06)]">
+          <div className="hidden items-end gap-[27px] px-[28px] pt-[32px] md:flex">
             <div className="h-[253px] w-[379px] overflow-hidden">
               <img alt="Otaru canal in winter" className="h-full w-full object-cover" src={discoverImageOtaruCanal} />
             </div>
@@ -738,7 +794,22 @@ export function DiscoverJournalView() {
             </div>
           </div>
 
-          <div className="flex items-end justify-between gap-[156px] px-[46px] pb-[42px] pt-[18px] tracking-[0.02em]">
+          <div className="grid grid-cols-2 gap-2.5 px-3 pt-3 sm:gap-3 sm:px-5 sm:pt-5 md:hidden">
+            <div className="overflow-hidden rounded-[18px] bg-[#edf2f7] shadow-[0_12px_24px_-18px_rgba(15,23,42,0.2)]">
+              <img alt="Otaru Canal" className="aspect-[0.92/1] h-full w-full object-cover" src={discoverImageOtaruCanal} />
+            </div>
+            <div className="overflow-hidden rounded-[18px] bg-[#edf2f7] shadow-[0_12px_24px_-18px_rgba(15,23,42,0.2)]">
+              <img alt="Snowy Street" className="aspect-[0.92/1] h-full w-full object-cover" src={discoverImageSlopeStreet} />
+            </div>
+            <div className="overflow-hidden rounded-[18px] bg-[#edf2f7] shadow-[0_12px_24px_-18px_rgba(15,23,42,0.2)]">
+              <img alt="Train Station" className="aspect-[0.92/1] h-full w-full object-cover" src={discoverImageStationPlatform} />
+            </div>
+            <div className="overflow-hidden rounded-[18px] bg-[#edf2f7] shadow-[0_12px_24px_-18px_rgba(15,23,42,0.2)]">
+              <img alt="Ferris Wheel" className="aspect-[0.92/1] h-full w-full object-cover" src={discoverImageFerrisWheel} />
+            </div>
+          </div>
+
+          <div className="hidden items-end justify-between gap-[156px] px-[46px] pb-[42px] pt-[18px] tracking-[0.02em] md:flex">
             <div className="w-[783px]">
               <h2 className="mb-[18px] text-[24px] font-medium text-black">
                 {copy.discover.title}
@@ -750,6 +821,20 @@ export function DiscoverJournalView() {
 
             <div className="w-[848px] pb-[6px] text-right text-[14px] font-medium text-[#404040]">
               {copy.discover.tags}
+            </div>
+          </div>
+
+          <div className="px-5 pb-7 pt-6 tracking-[0.01em] md:hidden">
+            <h2 className="max-w-[12ch] text-[20px] font-semibold leading-[1.28] text-[#171717] sm:text-[24px]">
+              {copy.discover.title}
+            </h2>
+            <p className="mt-5 text-[16px] leading-[1.9] text-[#505866]">
+              {copy.discover.body}
+            </p>
+            <div className="mt-6 flex justify-end">
+              <p className="max-w-[13.5rem] text-right text-[14px] font-medium leading-[1.7] text-[#4a5565]">
+                {copy.discover.tags}
+              </p>
             </div>
           </div>
         </article>
@@ -916,7 +1001,7 @@ function ProfileExperienceOverlay({
   }, []);
 
   return (
-    <div className="absolute inset-0 z-40 flex items-center justify-center px-8 py-10">
+    <div className="absolute inset-0 z-40 flex items-start justify-center overflow-y-auto px-4 py-6 md:items-center md:px-8 md:py-10">
       <div
         className={`absolute inset-0 transition-opacity duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
           revealStage >= 1 ? "opacity-100" : "opacity-0"
@@ -938,9 +1023,9 @@ function ProfileExperienceOverlay({
         }`}
       />
       <div
-        className={`absolute right-8 top-8 z-50 flex items-start gap-3 transition-all duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`absolute right-4 top-4 z-50 items-start gap-3 transition-all duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:right-8 md:top-8 ${
           revealStage >= 2 ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
-        }`}
+        } ${profileTheme === "native" ? "hidden md:flex" : "flex"}`}
       >
         <div className="relative">
           <button
@@ -1041,132 +1126,326 @@ function ProfileExperienceOverlay({
         <div
           className={`transition-all duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
             revealStage >= 1 ? "translate-y-0 scale-100 opacity-100" : "translate-y-4 scale-[0.985] opacity-0"
-          }`}
+          } ${profileTheme === "native" ? "hidden md:block" : "hidden md:block"}`}
         >
           <ThemeFloatingControls onClose={onClose} theme={profileTheme} />
         </div>
         {profileTheme === "native" ? (
-          <div className={`relative z-10 flex h-[520px] w-[760px] overflow-hidden rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(33,28,58,0.88),rgba(23,19,41,0.94))] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] transition-all duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${revealStage >= 1 ? "translate-y-0 scale-100 opacity-100" : "translate-y-5 scale-[0.97] opacity-0"}`}>
-          <div className={`flex w-[280px] flex-col items-center justify-center bg-black/20 p-8 transition-all duration-[620ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${revealStage >= 2 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}>
-          <div className="group relative mb-6 cursor-pointer">
-            <div className="absolute inset-0 rounded-full bg-blue-500 blur-xl opacity-20 transition-opacity group-hover:opacity-40" />
-            <img
-              alt="Alex28"
-              className="relative h-32 w-32 rounded-full border-2 border-white/20 object-cover shadow-xl"
-              src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=250&auto=format&fit=crop"
-            />
-          </div>
-          <h2 className="mb-1 text-2xl font-semibold text-white">Alex28</h2>
-          <div className="mb-4 flex items-center gap-1.5 rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-1">
-            <svg className="h-3 w-3 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path d="m5 13 4 4L19 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
-            </svg>
-            <span className="text-[10px] font-medium uppercase tracking-wider text-blue-300">{archiveCopy.didVerified}</span>
-          </div>
-          <p className="mb-1 text-sm font-medium text-white/60">{archiveCopy.role}</p>
-          <p className="mb-8 text-sm text-white/40">{archiveCopy.city}</p>
-          <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-transparent px-4 py-2 transition-colors hover:border-white/10 hover:bg-white/5" type="button">
-            <span className="text-sm font-medium text-white/80">{archiveCopy.travelPreferences}</span>
-            <IconEdit className="h-4 w-4 text-white/40" />
-          </button>
-        </div>
-
-        <div className="flex flex-1 flex-col gap-6 p-8">
-          <div className={`transition-all duration-[640ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${revealStage >= 3 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}>
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-medium text-white/90">{archiveCopy.experientialArchive}</h3>
-              <span className="text-xs font-medium uppercase tracking-wider text-white/40">{archiveCopy.statistics}</span>
-            </div>
-            <div className="flex items-center gap-6">
-              <div className="relative h-32 w-32 flex-shrink-0">
-                <ExperienceRadar />
-              </div>
-              <div className="flex flex-1 flex-col gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="h-1.5 w-1.5 rounded-full bg-blue-400" />
-                  <span className="flex-1 text-sm text-white/60">{archiveCopy.virtualExperiences}</span>
-                  <span className="text-sm font-medium text-white">188</span>
+          <>
+            <div className={`relative z-10 hidden h-[520px] w-[760px] overflow-hidden rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(33,28,58,0.88),rgba(23,19,41,0.94))] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] transition-all duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:flex ${
+              revealStage >= 1 ? "translate-y-0 scale-100 opacity-100" : "translate-y-5 scale-[0.97] opacity-0"
+            }`}>
+              <div className={`flex w-[280px] flex-col items-center justify-center bg-black/20 p-8 transition-all duration-[620ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${revealStage >= 2 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}>
+                <div className="group relative mb-6 cursor-pointer">
+                  <div className="absolute inset-0 rounded-full bg-blue-500 blur-xl opacity-20 transition-opacity group-hover:opacity-40" />
+                  <img
+                    alt="Alex28"
+                    className="relative h-32 w-32 rounded-full border-2 border-white/20 object-cover shadow-xl"
+                    src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=250&auto=format&fit=crop"
+                  />
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="h-1.5 w-1.5 rounded-full bg-purple-400" />
-                  <span className="flex-1 text-sm text-white/60">{archiveCopy.actualTrips}</span>
-                  <span className="text-sm font-medium text-white">35</span>
+                <h2 className="mb-1 text-2xl font-semibold text-white">Alex28</h2>
+                <div className="mb-4 flex items-center gap-1.5 rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-1">
+                  <svg className="h-3 w-3 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="m5 13 4 4L19 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
+                  </svg>
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-blue-300">{archiveCopy.didVerified}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  <span className="flex-1 text-sm text-white/60">{archiveCopy.explored}</span>
-                  <span className="text-right text-sm font-medium leading-tight text-white">
-                    4 Continents
-                    <br />
-                    <span className="text-xs text-white/50">15 Countries</span>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="my-1 h-px w-full bg-white/10" />
-
-          <div className={`transition-all duration-[680ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${revealStage >= 4 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}>
-            <div className="mb-3">
-              <h3 className="text-[13px] font-medium uppercase tracking-wider text-white/80">{archiveCopy.aiInstructions}</h3>
-            </div>
-            <div className="relative h-20 w-full rounded-xl border border-white/10 bg-black/30 p-3 transition-colors hover:border-white/20">
-              <div className="absolute bottom-2 right-2 flex gap-1.5">
-                <button className="rounded-full bg-white/5 p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white" type="button">
-                  <IconUndo className="h-3.5 w-3.5" />
-                </button>
-                <button className="rounded-full bg-white/5 p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white" type="button">
-                  <IconRedo className="h-3.5 w-3.5" />
-                </button>
-                <button className="rounded-full bg-white/5 p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white" type="button">
-                  <IconEdit className="h-3.5 w-3.5" />
+                <p className="mb-1 text-sm font-medium text-white/60">{archiveCopy.role}</p>
+                <p className="mb-8 text-sm text-white/40">{archiveCopy.city}</p>
+                <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-transparent px-4 py-2 transition-colors hover:border-white/10 hover:bg-white/5" type="button">
+                  <span className="text-sm font-medium text-white/80">{archiveCopy.travelPreferences}</span>
+                  <IconEdit className="h-4 w-4 text-white/40" />
                 </button>
               </div>
-            </div>
-          </div>
 
-          <div className={`transition-all duration-[740ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${revealStage >= 4 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}>
-            <div className="mb-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <h3 className="text-[13px] font-medium uppercase tracking-wider text-white/80">{archiveCopy.aiAccount}</h3>
-                <span className="text-[10px] font-medium tracking-wide text-emerald-400">{archiveCopy.linked}</span>
-              </div>
-              <button className="text-white/40 transition hover:text-white" type="button">
-                <IconEdit className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="flex items-center gap-6">
-              <div className="flex cursor-pointer flex-col items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/80 transition-colors hover:bg-white/10">
-                  <GPTIcon className="h-5 w-5" />
-                </div>
-                <span className="text-[10px] text-white/60">GPT-15</span>
-              </div>
-              <div className="flex cursor-pointer flex-col items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-blue-400 transition-colors hover:bg-white/10">
-                  <GeminiIcon className="h-6 w-6" />
-                </div>
-                <span className="text-[10px] text-white/60">Gemini 10 Pro</span>
-              </div>
-                <div className="flex cursor-pointer flex-col items-center gap-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/80 transition-colors hover:bg-white/10">
-                    <ClaudeIcon className="h-5 w-5 text-[#d97757]" />
+              <div className="flex flex-1 flex-col gap-6 p-8">
+                <div className={`transition-all duration-[640ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${revealStage >= 3 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}>
+                  <div className="mb-4 flex items-center justify-between">
+                    <h3 className="text-lg font-medium text-white/90">{archiveCopy.experientialArchive}</h3>
+                    <span className="text-xs font-medium uppercase tracking-wider text-white/40">{archiveCopy.statistics}</span>
                   </div>
-                  <span className="text-[10px] text-white/60">Claude</span>
+                  <div className="flex items-center gap-6">
+                    <div className="relative h-32 w-32 flex-shrink-0">
+                      <ExperienceRadar />
+                    </div>
+                    <div className="flex flex-1 flex-col gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+                        <span className="flex-1 text-sm text-white/60">{archiveCopy.virtualExperiences}</span>
+                        <span className="text-sm font-medium text-white">188</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="h-1.5 w-1.5 rounded-full bg-purple-400" />
+                        <span className="flex-1 text-sm text-white/60">{archiveCopy.actualTrips}</span>
+                        <span className="text-sm font-medium text-white">35</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                        <span className="flex-1 text-sm text-white/60">{archiveCopy.explored}</span>
+                        <span className="text-right text-sm font-medium leading-tight text-white">
+                          4 Continents
+                          <br />
+                          <span className="text-xs text-white/50">15 Countries</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              <div className="ml-2 flex cursor-pointer flex-col items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-white/10 bg-white/5 text-white/40 transition-colors hover:bg-white/10">
-                  <IconPlus className="h-4 w-4" />
+
+                <div className="my-1 h-px w-full bg-white/10" />
+
+                <div className={`transition-all duration-[680ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${revealStage >= 4 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}>
+                  <div className="mb-3">
+                    <h3 className="text-[13px] font-medium uppercase tracking-wider text-white/80">{archiveCopy.aiInstructions}</h3>
+                  </div>
+                  <div className="relative h-20 w-full rounded-xl border border-white/10 bg-black/30 p-3 transition-colors hover:border-white/20">
+                    <div className="absolute bottom-2 right-2 flex gap-1.5">
+                      <button className="rounded-full bg-white/5 p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white" type="button">
+                        <IconUndo className="h-3.5 w-3.5" />
+                      </button>
+                      <button className="rounded-full bg-white/5 p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white" type="button">
+                        <IconRedo className="h-3.5 w-3.5" />
+                      </button>
+                      <button className="rounded-full bg-white/5 p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white" type="button">
+                        <IconEdit className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <span className="text-[10px] text-transparent">Add</span>
+
+                <div className={`transition-all duration-[740ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${revealStage >= 4 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}>
+                  <div className="mb-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-[13px] font-medium uppercase tracking-wider text-white/80">{archiveCopy.aiAccount}</h3>
+                      <span className="text-[10px] font-medium tracking-wide text-emerald-400">{archiveCopy.linked}</span>
+                    </div>
+                    <button className="text-white/40 transition hover:text-white" type="button">
+                      <IconEdit className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-6">
+                    <div className="flex cursor-pointer flex-col items-center gap-2">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/80 transition-colors hover:bg-white/10">
+                        <GPTIcon className="h-5 w-5" />
+                      </div>
+                      <span className="text-[10px] text-white/60">GPT-15</span>
+                    </div>
+                    <div className="flex cursor-pointer flex-col items-center gap-2">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-blue-400 transition-colors hover:bg-white/10">
+                        <GeminiIcon className="h-6 w-6" />
+                      </div>
+                      <span className="text-[10px] text-white/60">Gemini 10 Pro</span>
+                    </div>
+                    <div className="flex cursor-pointer flex-col items-center gap-2">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/80 transition-colors hover:bg-white/10">
+                        <ClaudeIcon className="h-5 w-5 text-[#d97757]" />
+                      </div>
+                      <span className="text-[10px] text-white/60">Claude</span>
+                    </div>
+                    <div className="ml-2 flex cursor-pointer flex-col items-center gap-2">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-white/10 bg-white/5 text-white/40 transition-colors hover:bg-white/10">
+                        <IconPlus className="h-4 w-4" />
+                      </div>
+                      <span className="text-[10px] text-transparent">Add</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={`relative z-10 w-full max-w-[332px] overflow-hidden rounded-[34px] border border-white/12 bg-[linear-gradient(180deg,rgba(34,36,86,0.96)_0%,rgba(27,22,56,0.96)_16%,rgba(23,18,47,0.98)_100%)] shadow-[0_30px_70px_-18px_rgba(0,0,0,0.58)] transition-all duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:hidden ${
+            revealStage >= 1 ? "translate-y-0 scale-100 opacity-100" : "translate-y-5 scale-[0.97] opacity-0"
+          }`}>
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top,rgba(92,110,255,0.16),transparent_65%)]" />
+            <div className="relative max-h-[calc(100vh-48px)] overflow-y-auto md:max-h-none">
+              <div className="flex items-center justify-between px-4 pb-4 pt-4 md:hidden">
+                <button
+                  aria-expanded={themeMenuOpen}
+                  aria-haspopup="menu"
+                  className="flex items-center gap-2 rounded-full border border-white/12 bg-white/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/88 backdrop-blur-xl transition hover:bg-white/14"
+                  onClick={() => setThemeMenuOpen((open) => !open)}
+                  type="button"
+                >
+                  <span>{activeThemeLabel}</span>
+                  <svg aria-hidden="true" className={`h-3.5 w-3.5 transition-transform ${themeMenuOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                    <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                <button
+                  aria-label="Close profile panel"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-white/10 text-white/78 backdrop-blur-xl transition hover:bg-white/14 hover:text-white"
+                  onClick={onClose}
+                  type="button"
+                >
+                  <IconCloseCircle />
+                </button>
+                <div
+                  className={`absolute left-4 top-[calc(100%+6px)] z-20 w-52 origin-top-left rounded-[20px] border border-white/10 bg-[#121528]/92 p-2 shadow-[0_22px_48px_-24px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-all duration-200 ${
+                    themeMenuOpen ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-1.5 opacity-0"
+                  }`}
+                >
+                  <div className="flex flex-col gap-1">
+                    {themeOptions.map((theme) => (
+                      <button
+                        key={theme.key}
+                        className={`flex w-full items-center justify-between rounded-[14px] px-3 py-2.5 text-left text-[12px] transition ${
+                          profileTheme === theme.key ? "bg-white/10 text-white" : "text-white/65 hover:bg-white/5 hover:text-white"
+                        }`}
+                        onClick={() => {
+                          setProfileTheme(theme.key);
+                          setThemeMenuOpen(false);
+                        }}
+                        type="button"
+                      >
+                        <span>{theme.label}</span>
+                        {profileTheme === theme.key ? <span className="text-[10px] uppercase tracking-[0.18em] opacity-70">Active</span> : null}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="md:flex md:h-[520px]">
+                <div className={`border-b border-white/8 px-5 pb-5 pt-7 md:flex md:w-[280px] md:flex-col md:items-center md:justify-center md:border-b-0 md:border-r md:border-white/8 md:bg-black/20 md:p-8 ${
+                  revealStage >= 2 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+                } transition-all duration-[620ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
+                  <div className="group relative mx-auto mb-5 h-[86px] w-[86px] cursor-pointer md:mb-6 md:h-32 md:w-32">
+                    <div className="absolute inset-[-6px] rounded-full bg-[radial-gradient(circle,rgba(92,149,255,0.48)_0%,rgba(92,149,255,0.18)_48%,transparent_72%)] blur-md" />
+                    <img
+                      alt="Alex28"
+                      className="relative h-full w-full rounded-full border-[3px] border-[#9fb9ff]/45 object-cover shadow-[0_18px_38px_-18px_rgba(32,74,255,0.7)]"
+                      src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=250&auto=format&fit=crop"
+                    />
+                  </div>
+                  <h2 className="mb-2 text-center text-[20px] font-semibold tracking-tight text-white md:mb-1 md:text-2xl">Alex28</h2>
+                  <div className="mx-auto mb-4 flex w-fit items-center gap-1.5 rounded-full border border-[#4f7fff]/35 bg-[#2555ff]/14 px-3 py-1 shadow-[0_0_22px_rgba(65,117,255,0.28)]">
+                    <svg className="h-3 w-3 text-[#6aa0ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path d="m5 13 4 4L19 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
+                    </svg>
+                    <span className="text-[10px] font-medium uppercase tracking-wider text-[#92b4ff]">{archiveCopy.didVerified}</span>
+                  </div>
+                  <div className="space-y-1 text-center">
+                    <p className="text-sm font-medium text-white/72">{archiveCopy.role}</p>
+                    <p className="text-sm text-white/48">{archiveCopy.city}</p>
+                  </div>
+                  <button className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-transparent px-4 py-2 text-left transition-colors hover:border-white/10 hover:bg-white/5 md:mt-8" type="button">
+                    <span className="text-sm font-medium text-white/76">{archiveCopy.travelPreferences}</span>
+                    <IconEdit className="h-4 w-4 text-white/40" />
+                  </button>
+                </div>
+
+                <div className="flex flex-1 flex-col gap-5 px-4 pb-5 pt-4 md:gap-6 md:p-8">
+                  <div className={`transition-all duration-[640ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                    revealStage >= 3 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+                  }`}>
+                    <div className="mb-4 flex items-center justify-between">
+                      <h3 className="text-lg font-medium text-white/92">{archiveCopy.experientialArchive}</h3>
+                      <span className="text-xs font-medium text-white/42">{archiveCopy.statistics}</span>
+                    </div>
+                    <div className="rounded-[26px] border border-white/6 bg-white/[0.02] px-4 py-5 md:bg-transparent md:px-0 md:py-0">
+                      <div className="mx-auto mb-6 h-[180px] w-[180px] md:h-40 md:w-40">
+                        <ExperienceRadar
+                          accentClassName="text-[#4f8cff]"
+                          gridStroke="rgba(125,147,255,0.18)"
+                          labelFill="rgba(214,223,255,0.82)"
+                          labelFontSize={8.8}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        <div className="flex items-start gap-3">
+                          <div className="mt-2 h-2 w-2 rounded-full bg-[#4f8cff] shadow-[0_0_10px_rgba(79,140,255,0.9)]" />
+                          <span className="flex-1 text-sm text-white/66">{archiveCopy.virtualExperiences}</span>
+                          <span className="text-sm font-semibold text-white">188</span>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="mt-2 h-2 w-2 rounded-full bg-[#b26dff] shadow-[0_0_10px_rgba(178,109,255,0.9)]" />
+                          <span className="flex-1 text-sm text-white/66">{archiveCopy.actualTrips}</span>
+                          <span className="text-sm font-semibold text-white">35</span>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="mt-2 h-2 w-2 rounded-full bg-[#3df2b6] shadow-[0_0_10px_rgba(61,242,182,0.9)]" />
+                          <span className="flex-1 text-sm text-white/66">{archiveCopy.explored}</span>
+                          <span className="text-right text-sm font-semibold leading-tight text-white">
+                            4 Continents
+                            <br />
+                            <span className="font-medium text-white/54">15 Countries</span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="h-px w-full bg-white/8" />
+
+                  <div className={`transition-all duration-[680ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                    revealStage >= 4 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+                  }`}>
+                    <div className="mb-3">
+                      <h3 className="text-[13px] font-medium uppercase tracking-wider text-white/82">{archiveCopy.aiInstructions}</h3>
+                    </div>
+                    <div className="relative h-24 w-full rounded-[18px] border border-white/10 bg-[#090d17] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-colors hover:border-white/18">
+                      <div className="absolute bottom-3 right-3 flex gap-1.5">
+                        <button className="rounded-full bg-white/5 p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white" type="button">
+                          <IconUndo className="h-3.5 w-3.5" />
+                        </button>
+                        <button className="rounded-full bg-white/5 p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white" type="button">
+                          <IconRedo className="h-3.5 w-3.5" />
+                        </button>
+                        <button className="rounded-full bg-white/5 p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white" type="button">
+                          <IconEdit className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={`transition-all duration-[740ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                    revealStage >= 4 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+                  }`}>
+                    <div className="mb-3 flex items-center justify-between">
+                      <h3 className="text-[13px] font-medium uppercase tracking-wider text-white/82">{archiveCopy.aiAccount}</h3>
+                      <button className="text-white/40 transition hover:text-white" type="button">
+                        <IconEdit className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <div className="flex gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                      <div className="flex min-w-[92px] flex-col items-center gap-2 rounded-[18px] border border-white/8 bg-white/[0.03] px-3 py-3">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/80">
+                          <GPTIcon className="h-5 w-5" />
+                        </div>
+                        <span className="text-[10px] text-white/62">GPT-15</span>
+                        <span className="rounded-full bg-emerald-400/14 px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-emerald-300">Connected</span>
+                      </div>
+                      <div className="flex min-w-[112px] flex-col items-center gap-2 rounded-[18px] border border-white/8 bg-white/[0.03] px-3 py-3">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-blue-400">
+                          <GeminiIcon className="h-6 w-6" />
+                        </div>
+                        <span className="text-[10px] text-white/62">Gemini 10 Pro</span>
+                        <span className="rounded-full bg-emerald-400/14 px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-emerald-300">Connected</span>
+                      </div>
+                      <div className="flex min-w-[92px] flex-col items-center gap-2 rounded-[18px] border border-white/8 bg-white/[0.03] px-3 py-3">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/80">
+                          <ClaudeIcon className="h-5 w-5 text-[#d97757]" />
+                        </div>
+                        <span className="text-[10px] text-white/62">Claude</span>
+                        <span className="rounded-full bg-emerald-400/14 px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-emerald-300">Connected</span>
+                      </div>
+                      <div className="flex min-w-[74px] flex-col items-center justify-center gap-2 rounded-[18px] border border-dashed border-white/12 bg-white/[0.02] px-3 py-3 text-white/42 transition-colors hover:bg-white/[0.05]">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-full border border-dashed border-white/12 bg-white/[0.04]">
+                          <IconPlus className="h-4 w-4" />
+                        </div>
+                        <span className="text-[10px] text-white/40">Add</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        </div>
+          </>
         ) : profileTheme === "premium" ? (
-        <div className={`relative z-10 flex h-[520px] w-[760px] overflow-hidden rounded-[32px] border border-white bg-[rgba(248,249,252,0.94)] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.08)] transition-all duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${revealStage >= 1 ? "translate-y-0 scale-100 opacity-100" : "translate-y-5 scale-[0.97] opacity-0"}`}>
+        <>
+        <div className={`relative z-10 hidden h-[520px] w-[760px] overflow-hidden rounded-[32px] border border-white bg-[rgba(248,249,252,0.94)] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.08)] transition-all duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:flex ${revealStage >= 1 ? "translate-y-0 scale-100 opacity-100" : "translate-y-5 scale-[0.97] opacity-0"}`}>
           <div className={`flex w-[280px] flex-col items-center justify-center bg-slate-50/60 p-8 transition-all duration-[620ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${revealStage >= 2 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}>
           <img
             alt="Alex28"
@@ -1269,8 +1548,74 @@ function ProfileExperienceOverlay({
           </div>
         </div>
         </div>
+        <div className={`relative z-10 w-full max-w-[344px] overflow-hidden rounded-[30px] border border-white bg-[rgba(248,249,252,0.96)] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.16)] transition-all duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:hidden ${revealStage >= 1 ? "translate-y-0 scale-100 opacity-100" : "translate-y-5 scale-[0.97] opacity-0"}`}>
+          <div className="max-h-[calc(100vh-40px)] overflow-y-auto px-4 pb-5 pt-18">
+            <div className={`mb-4 rounded-[24px] bg-slate-50/90 p-5 text-center transition-all duration-[620ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${revealStage >= 2 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}>
+              <img alt="Alex28" className="mx-auto mb-4 h-24 w-24 rounded-full border-4 border-white object-cover shadow-lg" src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=250&auto=format&fit=crop" />
+              <h2 className="mb-2 text-2xl font-semibold text-slate-800">Alex28</h2>
+              <span className="mb-4 inline-flex rounded-md border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-indigo-600">
+                {archiveCopy.didVerified}
+              </span>
+              <p className="mb-1 text-sm font-medium text-slate-600">{archiveCopy.role}</p>
+              <p className="mb-5 text-sm text-slate-400">{archiveCopy.city}</p>
+              <button className="mx-auto flex items-center gap-2 rounded-lg border border-transparent px-3 py-1.5 text-slate-500 transition-colors hover:border-slate-200 hover:text-slate-800" type="button">
+                <span className="text-sm font-medium">{archiveCopy.travelPreferences}</span>
+                <IconEdit className="h-4 w-4" />
+              </button>
+            </div>
+            <div className={`space-y-4 transition-all duration-[680ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${revealStage >= 3 ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}>
+              <div className="rounded-[24px] bg-white/80 p-5">
+                <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-2">
+                  <h3 className="text-lg font-semibold text-slate-800">{archiveCopy.experientialArchive}</h3>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">{archiveCopy.statistics}</span>
+                </div>
+                <div className="mx-auto mb-4 h-36 w-36">
+                  <ExperienceRadar accentClassName="text-indigo-500" gridStroke="#e2e8f0" labelFill="#64748b" labelFontSize={8.5} />
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50 px-3 py-2">
+                    <span className="text-sm text-slate-500">{archiveCopy.virtualExperiences}</span>
+                    <span className="text-sm font-semibold text-slate-800">188</span>
+                  </div>
+                  <div className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50 px-3 py-2">
+                    <span className="text-sm text-slate-500">{archiveCopy.actualTrips}</span>
+                    <span className="text-sm font-semibold text-slate-800">35</span>
+                  </div>
+                  <div className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50 px-3 py-2">
+                    <span className="text-sm text-slate-500">{archiveCopy.explored}</span>
+                    <span className="text-right text-sm font-semibold text-slate-800">4 Continents, 15 Countries</span>
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-[24px] bg-white/80 p-5">
+                <h3 className="mb-3 text-sm font-semibold text-slate-700">{archiveCopy.aiInstructions}</h3>
+                <div className="relative h-24 rounded-xl border border-slate-200 bg-white p-3 shadow-inner">
+                  <div className="absolute bottom-2 right-2 flex gap-1.5 rounded-lg border border-slate-100 bg-slate-50 p-1">
+                    <button className="rounded p-1 text-slate-400 transition hover:bg-white hover:text-slate-700" type="button"><IconUndo className="h-4 w-4" /></button>
+                    <button className="rounded p-1 text-slate-400 transition hover:bg-white hover:text-slate-700" type="button"><IconRedo className="h-4 w-4" /></button>
+                    <button className="rounded p-1 text-slate-400 transition hover:bg-white hover:text-slate-700" type="button"><IconEdit className="h-4 w-4" /></button>
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-[24px] bg-white/80 p-5">
+                <div className="mb-3 flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-slate-700">{archiveCopy.aiAccount} <span className="ml-1 font-medium text-indigo-500">{archiveCopy.linked}</span></h3>
+                  <button className="text-slate-400 transition hover:text-slate-600" type="button"><IconEdit className="h-4 w-4" /></button>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex items-center gap-2 rounded-lg border border-slate-100 bg-slate-50 p-3"><GPTIcon className="h-5 w-5 text-slate-700" /><span className="text-[11px] font-medium text-slate-500">GPT-15</span></div>
+                  <div className="flex items-center gap-2 rounded-lg border border-slate-100 bg-slate-50 p-3"><GeminiIcon className="h-5 w-5" /><span className="text-[11px] font-medium text-slate-500">Gemini 10 Pro</span></div>
+                  <div className="flex items-center gap-2 rounded-lg border border-slate-100 bg-slate-50 p-3"><ClaudeIcon className="h-5 w-5 text-[#d97757]" /><span className="text-[11px] font-medium text-slate-500">Claude</span></div>
+                  <div className="flex items-center justify-center rounded-lg border border-dashed border-slate-300 p-3 text-slate-400"><IconPlus className="h-4 w-4" /></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </>
         ) : profileTheme === "bento" ? (
-        <div className={`relative z-10 grid h-[540px] w-[760px] grid-cols-12 grid-rows-6 gap-4 transition-all duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${revealStage >= 1 ? "translate-y-0 scale-100 opacity-100" : "translate-y-5 scale-[0.97] opacity-0"}`}>
+        <>
+        <div className={`relative z-10 hidden h-[540px] w-[760px] grid-cols-12 grid-rows-6 gap-4 transition-all duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:grid ${revealStage >= 1 ? "translate-y-0 scale-100 opacity-100" : "translate-y-5 scale-[0.97] opacity-0"}`}>
           <div className="col-span-4 row-span-6 flex flex-col justify-between rounded-[28px] border border-zinc-800 bg-[#18181b] p-6 shadow-2xl">
           <div className="flex flex-col items-center">
             <img
@@ -1381,8 +1726,45 @@ function ProfileExperienceOverlay({
           </div>
         </div>
         </div>
+        <div className={`relative z-10 w-full max-w-[344px] overflow-hidden rounded-[28px] border border-zinc-800 bg-[#18181b] p-4 shadow-2xl transition-all duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:hidden ${revealStage >= 1 ? "translate-y-0 scale-100 opacity-100" : "translate-y-5 scale-[0.97] opacity-0"}`}>
+          <div className="grid max-h-[calc(100vh-40px)] grid-cols-2 gap-4 overflow-y-auto">
+            <div className="col-span-2 flex flex-col items-center rounded-[24px] border border-zinc-800 bg-[#18181b] p-5">
+              <img alt="Alex28" className="mb-4 h-20 w-20 rounded-full object-cover" src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=250&auto=format&fit=crop" />
+              <h2 className="text-xl font-bold text-zinc-100">Alex28</h2>
+              <span className="mb-3 mt-1 rounded border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase text-emerald-400">[ {archiveCopy.didVerified} ]</span>
+              <p className="text-sm text-zinc-400">{archiveCopy.role}</p>
+              <p className="mb-5 text-sm text-zinc-500">{archiveCopy.city}</p>
+              <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-700/50 bg-zinc-800/50 py-3 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800" type="button">{archiveCopy.travelPreferences}<IconEdit className="h-3.5 w-3.5" /></button>
+            </div>
+            <div className="col-span-2 rounded-[24px] border border-zinc-800 bg-[#18181b] p-5">
+              <h3 className="mb-1 font-semibold text-zinc-100">{archiveCopy.experientialArchive}</h3>
+              <p className="mb-4 text-xs uppercase tracking-wider text-zinc-500">{archiveCopy.statistics}</p>
+              <div className="mx-auto mb-4 h-32 w-32"><ExperienceRadar accentClassName="text-blue-500" gridStroke="rgba(82,82,91,0.75)" labelFill="rgba(161,161,170,0.85)" labelFontSize={8.4} /></div>
+              <div className="space-y-3">
+                <div><div className="mb-1 flex justify-between text-xs"><span className="text-zinc-400">{archiveCopy.virtualExperiences}</span><span className="text-zinc-100">188</span></div><div className="h-1 w-full overflow-hidden rounded-full bg-zinc-800"><div className="h-full w-[80%] bg-blue-500" /></div></div>
+                <div><div className="mb-1 flex justify-between text-xs"><span className="text-zinc-400">{archiveCopy.actualTrips}</span><span className="text-zinc-100">35</span></div><div className="h-1 w-full overflow-hidden rounded-full bg-zinc-800"><div className="h-full w-[30%] bg-emerald-500" /></div></div>
+                <div><div className="mb-1 flex justify-between text-xs"><span className="text-zinc-400">{archiveCopy.explored}</span><span className="text-zinc-100">4 Continents, 15 Countries</span></div><div className="h-1 w-full overflow-hidden rounded-full bg-zinc-800"><div className="h-full w-[60%] bg-purple-500" /></div></div>
+              </div>
+            </div>
+            <div className="rounded-[24px] border border-zinc-800 bg-[#18181b] p-4">
+              <h3 className="mb-3 text-sm font-semibold text-zinc-100">{archiveCopy.aiInstructions}</h3>
+              <div className="relative h-28 rounded-xl border border-zinc-800/50 bg-zinc-900 p-2"><div className="absolute bottom-2 right-2 flex gap-1"><button className="p-1.5 text-zinc-500 transition hover:text-zinc-300" type="button"><IconUndo className="h-3.5 w-3.5" /></button><button className="p-1.5 text-zinc-500 transition hover:text-zinc-300" type="button"><IconRedo className="h-3.5 w-3.5" /></button><button className="p-1.5 text-zinc-500 transition hover:text-zinc-300" type="button"><IconEdit className="h-3.5 w-3.5" /></button></div></div>
+            </div>
+            <div className="rounded-[24px] border border-zinc-800 bg-[#18181b] p-4">
+              <div className="mb-4 flex items-center justify-between"><h3 className="text-sm font-semibold text-zinc-100">{archiveCopy.aiAccount}</h3><IconEdit className="h-3.5 w-3.5 text-zinc-500" /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center gap-2 rounded-lg border border-zinc-800/50 bg-zinc-900 p-2"><GPTIcon className="h-4 w-4 text-zinc-300" /><span className="text-[10px] text-zinc-400">GPT-15</span></div>
+                <div className="flex items-center gap-2 rounded-lg border border-zinc-800/50 bg-zinc-900 p-2"><GeminiIcon className="h-4 w-4" /><span className="text-[10px] text-zinc-400">Gemini 10 Pro</span></div>
+                <div className="flex items-center gap-2 rounded-lg border border-zinc-800/50 bg-zinc-900 p-2"><ClaudeIcon className="h-4 w-4 text-[#d97757]" /><span className="text-[10px] text-zinc-400">Claude</span></div>
+                <div className="flex items-center justify-center rounded-lg border border-dashed border-zinc-700 p-2"><IconPlus className="h-4 w-4 text-zinc-500" /></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </>
         ) : profileTheme === "minimalist" ? (
-        <div className={`relative z-10 flex w-[720px] flex-col rounded-[40px] border border-gray-100 bg-white p-10 shadow-sm transition-all duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${revealStage >= 1 ? "translate-y-0 scale-100 opacity-100" : "translate-y-5 scale-[0.97] opacity-0"}`}>
+        <>
+        <div className={`relative z-10 hidden w-[720px] flex-col rounded-[40px] border border-gray-100 bg-white p-10 shadow-sm transition-all duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:flex ${revealStage >= 1 ? "translate-y-0 scale-100 opacity-100" : "translate-y-5 scale-[0.97] opacity-0"}`}>
           <div className="mb-8 flex items-start justify-between">
           <div className="flex items-center gap-6">
             <img
@@ -1473,8 +1855,40 @@ function ProfileExperienceOverlay({
           </div>
         </div>
         </div>
+        <div className={`relative z-10 w-full max-w-[344px] overflow-hidden rounded-[32px] border border-gray-100 bg-white p-5 shadow-sm transition-all duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:hidden ${revealStage >= 1 ? "translate-y-0 scale-100 opacity-100" : "translate-y-5 scale-[0.97] opacity-0"}`}>
+          <div className="max-h-[calc(100vh-40px)] overflow-y-auto">
+            <div className="mb-6 flex items-start justify-between">
+              <div className="flex items-center gap-4">
+                <img alt="Alex28" className="h-16 w-16 rounded-full object-cover" src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=250&auto=format&fit=crop" />
+                <div><div className="mb-1 flex items-center gap-2"><h2 className="text-2xl font-bold tracking-tight text-gray-900">Alex28</h2><span className="rounded-full bg-black px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white">{archiveCopy.didVerified}</span></div><p className="text-sm font-medium text-gray-500">{archiveCopy.role}</p><p className="text-sm text-gray-400">{archiveCopy.city}</p></div>
+              </div>
+              <button className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 transition hover:bg-gray-50" title={archiveCopy.travelPreferences} type="button"><IconEdit className="h-4 w-4 text-gray-600" /></button>
+            </div>
+            <div className="mb-6 h-px w-full bg-gray-100" />
+            <div className="space-y-5">
+              <div>
+                <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-gray-400">{archiveCopy.experientialArchive}</h3>
+                <div className="mx-auto mb-4 h-28 w-28"><ExperienceRadar accentClassName="text-black" gridStroke="#f3f4f6" labelFill="#9ca3af" labelFontSize={8.2} /></div>
+                <div className="space-y-3">
+                  <div><p className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">{archiveCopy.virtualExperiences}</p><p className="text-xl font-bold text-gray-900">188</p></div>
+                  <div className="flex gap-8"><div><p className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">{archiveCopy.actualTrips}</p><p className="text-xl font-bold text-gray-900">35</p></div><div><p className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">{archiveCopy.explored}</p><p className="mt-1 text-sm font-bold text-gray-900">4 Continents, 15 Countries</p></div></div>
+                </div>
+              </div>
+              <div>
+                <h3 className="mb-3 text-xs font-bold uppercase tracking-widest text-gray-400">{archiveCopy.aiInstructions}</h3>
+                <div className="relative h-24 rounded-2xl border border-gray-200 bg-gray-50 p-2"><div className="absolute bottom-2 right-2 flex gap-1"><button className="p-1 text-gray-400 transition hover:text-black" type="button"><IconUndo className="h-4 w-4" /></button><button className="p-1 text-gray-400 transition hover:text-black" type="button"><IconRedo className="h-4 w-4" /></button><button className="p-1 text-gray-400 transition hover:text-black" type="button"><IconEdit className="h-4 w-4" /></button></div></div>
+              </div>
+              <div>
+                <h3 className="mb-3 flex justify-between text-xs font-bold uppercase tracking-widest text-gray-400"><span>{archiveCopy.aiAccount}</span><span className="text-black">{archiveCopy.linked}</span></h3>
+                <div className="flex gap-2"><div className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white"><GPTIcon className="h-4 w-4 text-black" /></div><div className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white"><GeminiIcon className="h-4 w-4 text-black" /></div><div className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white"><ClaudeIcon className="h-4 w-4 text-[#d97757]" /></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </>
         ) : (
-        <div className={`relative z-10 flex h-[520px] w-[800px] flex-col overflow-hidden rounded-sm border border-[#dcd7cd] bg-[#fcfaf7] p-8 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${revealStage >= 1 ? "translate-y-0 scale-100 opacity-100" : "translate-y-5 scale-[0.97] opacity-0"}`}>
+        <>
+        <div className={`relative z-10 hidden h-[520px] w-[800px] flex-col overflow-hidden rounded-sm border border-[#dcd7cd] bg-[#fcfaf7] p-8 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:flex ${revealStage >= 1 ? "translate-y-0 scale-100 opacity-100" : "translate-y-5 scale-[0.97] opacity-0"}`}>
           <div className="mb-5 flex shrink-0 items-end justify-between border-b-[3px] border-[#2d2a26] pb-4">
           <div>
             <h1 className="mb-1.5 font-serif text-[40px] font-bold italic leading-none tracking-tight text-[#2d2a26]">Alex28</h1>
@@ -1568,6 +1982,46 @@ function ProfileExperienceOverlay({
           </div>
         </div>
       </div>
+      <div className={`relative z-10 w-full max-w-[344px] overflow-hidden rounded-[24px] border border-[#dcd7cd] bg-[#fcfaf7] p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:hidden ${revealStage >= 1 ? "translate-y-0 scale-100 opacity-100" : "translate-y-5 scale-[0.97] opacity-0"}`}>
+        <div className="max-h-[calc(100vh-40px)] overflow-y-auto">
+          <div className="mb-5 border-b-[3px] border-[#2d2a26] pb-4">
+            <h1 className="mb-1.5 font-serif text-[34px] font-bold italic leading-none tracking-tight text-[#2d2a26]">Alex28</h1>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8c8273]">{archiveCopy.role} - {archiveCopy.city}</p>
+          </div>
+          <div className="mb-5 flex items-start justify-between">
+            <img alt="Alex28 Profile" className="aspect-[3/4] w-[112px] rounded-sm object-cover brightness-105 contrast-110 sepia-[0.15]" src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=250&auto=format&fit=crop" />
+            <div className="flex flex-col items-end gap-2.5">
+              <span className="inline-block border border-[#d97757] px-1.5 py-0.5 text-[9px] font-bold uppercase leading-tight tracking-widest text-[#d97757]">{archiveCopy.didVerified}</span>
+              <button className="group flex items-center justify-end gap-1.5 text-[#2d2a26] transition-colors hover:text-[#d97757]" type="button"><span className="text-[10px] font-bold uppercase tracking-wider">{archiveCopy.travelPreferences}</span><IconEdit className="h-3 w-3" /></button>
+            </div>
+          </div>
+          <div className="mb-5">
+            <h2 className="mb-1 font-serif text-[22px] font-bold leading-tight text-[#2d2a26]">{archiveCopy.experientialArchive}</h2>
+            <p className="mb-3 border-b border-[#ece9e4] pb-1.5 text-[9px] uppercase tracking-widest text-[#8c8273]">{archiveCopy.statistics}</p>
+            <div className="flex justify-center py-2"><div className="h-36 w-36"><ExperienceRadar accentClassName="text-[#d97757]" gridStroke="rgba(220,215,205,0.95)" labelFill="#8c8273" labelFontSize={8.2} /></div></div>
+            <div className="grid grid-cols-2 gap-x-5 gap-y-3">
+              <div className="border-t border-[#dcd7cd] pt-1.5"><p className="mb-0.5 text-[8px] font-semibold uppercase tracking-wider text-[#8c8273]">{archiveCopy.virtualExperiences}</p><p className="font-serif text-2xl leading-none text-[#2d2a26]">188</p></div>
+              <div className="border-t border-[#dcd7cd] pt-1.5"><p className="mb-0.5 text-[8px] font-semibold uppercase tracking-wider text-[#8c8273]">{archiveCopy.actualTrips}</p><p className="font-serif text-2xl leading-none text-[#2d2a26]">35</p></div>
+              <div className="col-span-2 border-t border-[#dcd7cd] pt-1.5"><p className="mb-0.5 text-[8px] font-semibold uppercase tracking-wider text-[#8c8273]">{archiveCopy.explored}</p><p className="font-serif text-[20px] leading-none text-[#2d2a26]">4 Continents, 15 Countries</p></div>
+            </div>
+          </div>
+          <div className="space-y-5">
+            <div>
+              <h3 className="mb-2.5 text-[9px] font-bold uppercase tracking-[0.15em] text-[#2d2a26]">{archiveCopy.aiInstructions}</h3>
+              <div className="relative h-[84px] w-full border border-[#dcd7cd] bg-white shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]"><div className="absolute bottom-1 right-1 flex gap-0.5"><button className="rounded p-1.5 text-[#8c8273] transition-colors hover:bg-black/5 hover:text-[#2d2a26]" title="Undo" type="button"><IconUndo className="h-3.5 w-3.5" /></button><button className="rounded p-1.5 text-[#8c8273] transition-colors hover:bg-black/5 hover:text-[#2d2a26]" title="Redo" type="button"><IconRedo className="h-3.5 w-3.5" /></button><button className="rounded p-1.5 text-[#8c8273] transition-colors hover:bg-black/5 hover:text-[#2d2a26]" title="Edit" type="button"><IconEdit className="h-3.5 w-3.5" /></button></div></div>
+            </div>
+            <div>
+              <div className="mb-3 flex items-center justify-between"><h3 className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#2d2a26]">{archiveCopy.linkedAi}</h3></div>
+              <ul className="space-y-3">
+                <li className="flex items-center gap-3"><div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-[#ece9e4] text-[#2d2a26]"><GPTIcon className="h-3 w-3" /></div><span className="text-[11px] font-semibold tracking-wide text-[#8c8273]">GPT-15</span></li>
+                <li className="flex items-center gap-3"><div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-[#ece9e4] text-[#d97757]"><GeminiIcon className="h-3.5 w-3.5" /></div><span className="text-[11px] font-semibold tracking-wide text-[#8c8273]">Gemini 10 Pro</span></li>
+                <li className="flex items-center gap-3"><div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-[#ece9e4] text-[#2d2a26]"><ClaudeIcon className="h-3.5 w-3.5 text-[#d97757]" /></div><span className="text-[11px] font-semibold tracking-wide text-[#8c8273]">Claude</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      </>
       )}
     </div>
   );
@@ -1728,7 +2182,7 @@ export function WeaveAiHomePage() {
           transform: `scale(${profileOpen ? scale * 0.985 : scale})`,
         }}
       >
-      <aside className="relative z-20 flex h-full w-[90px] flex-shrink-0 flex-col items-center border-r border-white/10 bg-[linear-gradient(180deg,rgba(34,38,46,0.48)_0%,rgba(26,30,38,0.40)_100%)] py-6 text-white backdrop-blur-xl shadow-[6px_0_28px_-20px_rgba(0,0,0,0.16)]">
+      <aside className="relative z-20 hidden h-full w-[90px] flex-shrink-0 flex-col items-center border-r border-white/10 bg-[linear-gradient(180deg,rgba(34,38,46,0.48)_0%,rgba(26,30,38,0.40)_100%)] py-6 text-white backdrop-blur-xl shadow-[6px_0_28px_-20px_rgba(0,0,0,0.16)] md:flex">
         <div className="flex w-full flex-col items-center gap-3 px-4">
           <button
             aria-label={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
@@ -1765,7 +2219,9 @@ export function WeaveAiHomePage() {
         </nav>
       </aside>
 
-      <ExpandedSidebar activeNav={activeNav} expanded={sidebarExpanded} homeChats={homeChats} labels={copy.sidebar} onChatDelete={handleSidebarChatDelete} onChatSelect={handleSidebarChatSelect} />
+      <div className="hidden md:block">
+        <ExpandedSidebar activeNav={activeNav} expanded={sidebarExpanded} homeChats={homeChats} labels={copy.sidebar} onChatDelete={handleSidebarChatDelete} onChatSelect={handleSidebarChatSelect} />
+      </div>
 
       {activeNav === "saved" ? (
         <SavedTripsView />
@@ -2071,7 +2527,15 @@ export function WeaveAiHomePage() {
         </div>
       </main>
       )}
-      </div>
+    </div>
+    <MobileBottomNav
+      activeNav={activeNav}
+      labels={copy.sidebar}
+      onDiscover={() => setActiveNav("discover")}
+      onHome={() => setActiveNav("home")}
+      onProfile={() => setProfileOpen(true)}
+      onSaved={() => setActiveNav("saved")}
+    />
       {profileOpen ? <ProfileExperienceOverlay archiveCopy={archiveCopy} onClose={() => setProfileOpen(false)} /> : null}
     </div>
   );

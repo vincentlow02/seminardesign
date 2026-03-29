@@ -59,6 +59,7 @@ type WeavePromptBarProps = {
   theme?: PromptBarTheme;
   modelName?: string;
   showUtilityChips?: boolean;
+  showWebSearchChip?: boolean;
   generateTravelMemoryLabel?: string;
   webSearchLabel?: string;
 };
@@ -75,6 +76,7 @@ export function WeavePromptBar({
   theme = "light",
   modelName = "Weave",
   showUtilityChips = true,
+  showWebSearchChip = true,
   generateTravelMemoryLabel = "Generate travel memory",
   webSearchLabel = "Web search",
 }: WeavePromptBarProps) {
@@ -130,10 +132,12 @@ export function WeavePromptBar({
                 <IconImage />
                 <span>{generateTravelMemoryLabel}</span>
               </button>
-              <button className={`flex items-center gap-2 rounded-full border border-gray-100 text-gray-500 transition-colors hover:bg-gray-50 ${compact ? "h-[28px] px-2.5 text-[11px]" : "h-[32px] px-3 text-[13px]"}`} type="button">
-                <IconGlobe />
-                <span>{webSearchLabel}</span>
-              </button>
+              {showWebSearchChip ? (
+                <button className={`flex items-center gap-2 rounded-full border border-gray-100 text-gray-500 transition-colors hover:bg-gray-50 ${compact ? "h-[28px] px-2.5 text-[11px]" : "h-[32px] px-3 text-[13px]"}`} type="button">
+                  <IconGlobe />
+                  <span>{webSearchLabel}</span>
+                </button>
+              ) : null}
             </>
           ) : null}
         </div>

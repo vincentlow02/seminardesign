@@ -2107,12 +2107,34 @@ export function WeaveAiHomePage() {
 
     const params = new URLSearchParams(window.location.search);
     const queryLocation = normalizePartnerLocation(params.get("partnerLocation"));
+    let cancelled = false;
 
     if (queryLocation) {
       setStoredPartnerLocation(queryLocation);
       setPartnerLocation(queryLocation);
     } else {
       setPartnerLocation(getStoredPartnerLocation());
+
+      void fetch("/api/partner-location", { cache: "no-store" })
+        .then(async (response) => {
+          if (!response.ok) {
+            return null;
+          }
+
+          const payload = (await response.json()) as { location?: string | null };
+          return normalizePartnerLocation(payload.location);
+        })
+        .then((runtimeLocation) => {
+          if (cancelled || !runtimeLocation) {
+            return;
+          }
+
+          setStoredPartnerLocation(runtimeLocation);
+          setPartnerLocation(runtimeLocation);
+        })
+        .catch(() => {
+          // Keep stored or fallback location when runtime geolocation is unavailable.
+        });
     }
 
     const handlePartnerLocationChange = (event: Event) => {
@@ -2121,6 +2143,7 @@ export function WeaveAiHomePage() {
 
     window.addEventListener(WEAVE_PARTNER_LOCATION_EVENT, handlePartnerLocationChange);
     return () => {
+      cancelled = true;
       window.removeEventListener(WEAVE_PARTNER_LOCATION_EVENT, handlePartnerLocationChange);
     };
   }, []);

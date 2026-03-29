@@ -674,7 +674,7 @@ function ThirdScreen({
             type="button"
           >
             <span
-              className="text-[13px] font-light uppercase transition-all duration-300 md:text-[15px]"
+              className="relative z-[2] text-[13px] font-light uppercase transition-all duration-300 md:text-[15px]"
               style={{ letterSpacing: enterHovered ? "0.25em" : "0.2em" }}
             >
               {LANDING_COPY[language].enter}

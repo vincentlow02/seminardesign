@@ -2047,6 +2047,7 @@ export function WeaveAiHomePage() {
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const [language, setLanguage] = useState<WeaveLanguage>("EN");
   const [partnerLocation, setPartnerLocation] = useState<string | null>(null);
+  const [partnerTemperature, setPartnerTemperature] = useState<string>("--°");
   const [journeyTransition, setJourneyTransition] = useState<{ active: boolean; query: string }>({
     active: false,
     query: "",
@@ -2109,32 +2110,83 @@ export function WeaveAiHomePage() {
     const queryLocation = normalizePartnerLocation(params.get("partnerLocation"));
     let cancelled = false;
 
+    const applyRuntimePayload = (runtimePayload: { location: string | null; temperature: string | null } | null) => {
+      if (cancelled || !runtimePayload) {
+        return;
+      }
+
+      if (!queryLocation && runtimePayload.location) {
+        setStoredPartnerLocation(runtimePayload.location);
+        setPartnerLocation(runtimePayload.location);
+      }
+
+      if (runtimePayload.temperature) {
+        setPartnerTemperature(runtimePayload.temperature);
+      }
+    };
+
+    const fetchRuntimeLocation = async (query?: string) => {
+      const response = await fetch(query ? `/api/partner-location?${query}` : "/api/partner-location", { cache: "no-store" });
+      if (!response.ok) {
+        return null;
+      }
+
+      const payload = (await response.json()) as {
+        location?: string | null;
+        temperatureCelsius?: number | null;
+      };
+
+      return {
+        location: normalizePartnerLocation(payload.location),
+        temperature:
+          typeof payload.temperatureCelsius === "number" ? `${Math.round(payload.temperatureCelsius)}°` : null,
+      };
+    };
+
     if (queryLocation) {
       setStoredPartnerLocation(queryLocation);
       setPartnerLocation(queryLocation);
     } else {
       setPartnerLocation(getStoredPartnerLocation());
+    }
 
-      void fetch("/api/partner-location", { cache: "no-store" })
-        .then(async (response) => {
-          if (!response.ok) {
-            return null;
-          }
-
-          const payload = (await response.json()) as { location?: string | null };
-          return normalizePartnerLocation(payload.location);
-        })
-        .then((runtimeLocation) => {
-          if (cancelled || !runtimeLocation) {
-            return;
-          }
-
-          setStoredPartnerLocation(runtimeLocation);
-          setPartnerLocation(runtimeLocation);
+    const fallbackToIpLocation = () => {
+      void fetchRuntimeLocation()
+        .then((runtimePayload) => {
+          applyRuntimePayload(runtimePayload);
         })
         .catch(() => {
-          // Keep stored or fallback location when runtime geolocation is unavailable.
+          // Keep stored or fallback values when runtime geolocation/weather is unavailable.
         });
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        ({ coords }) => {
+          const query = new URLSearchParams({
+            latitude: String(coords.latitude),
+            longitude: String(coords.longitude),
+          }).toString();
+
+          void fetchRuntimeLocation(query)
+            .then((runtimePayload) => {
+              applyRuntimePayload(runtimePayload);
+            })
+            .catch(() => {
+              fallbackToIpLocation();
+            });
+        },
+        () => {
+          fallbackToIpLocation();
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 8000,
+          maximumAge: 600000,
+        }
+      );
+    } else {
+      fallbackToIpLocation();
     }
 
     const handlePartnerLocationChange = (event: Event) => {
@@ -2361,7 +2413,7 @@ export function WeaveAiHomePage() {
                     themeMode === "night" ? "text-white" : themeMode === "evening" ? "text-white" : "text-white"
                   }`}
                 >
-                  28°
+                  {partnerTemperature}
                 </span>
               </div>
               <p

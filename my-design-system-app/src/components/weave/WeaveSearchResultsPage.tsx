@@ -15,6 +15,9 @@ import {
   removeHomeSidebarChat,
 } from "@/components/weave/sidebarChats";
 
+const HOKKAIDO_VIDEO_SRC = "/media/hokkaido-web.mp4";
+const FINLAND_VIDEO_SRC = "/media/finland1-web.mp4";
+
 function IconBack() {
   return (
     <svg aria-hidden="true" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -400,6 +403,7 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
   const [language, setLanguage] = useState<WeaveLanguage>("EN");
   const hokkaidoVideoRef = useRef<HTMLVideoElement | null>(null);
   const finlandVideoRef = useRef<HTMLVideoElement | null>(null);
+  const fullscreenVideoRef = useRef<HTMLVideoElement | null>(null);
   const touchStartXRef = useRef<number | null>(null);
   const [activeNav, setActiveNav] = useState<"home" | "saved" | "discover">("home");
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
@@ -516,7 +520,7 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
       intro: "The Winter Charm of Hokkaido: Sapporo & Otaru",
       introBody:
         "Otaru is one of Hokkaido?s most iconic port towns, known for its retro canal, stone warehouses, and nostalgic atmosphere. In winter, the city is wrapped in snow, creating a romantic mood, while at night it comes alive with dazzling illuminations and a food scene that rivals any major city.",
-      src: "/api/media/hokkaido",
+      src: HOKKAIDO_VIDEO_SRC,
       spots: [
         {
           label: "Otaru City Center & Around Otaru Station",
@@ -591,7 +595,7 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
       intro: "The Winter Atmosphere of Finland: Lapland & Helsinki",
       introBody:
         "Finland in winter offers a different kind of rhythm ? quieter, colder, and more spacious. From snowy ski landscapes and northern lights to warm local dishes and festive city markets, it is a destination where winter feels both cinematic and deeply lived-in.",
-      src: "/api/media/finland",
+      src: FINLAND_VIDEO_SRC,
       spots: [
         {
           label: "Ski Resort Landscape",
@@ -782,7 +786,11 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
     }
 
     if (video.paused) {
-      void video.play().catch(() => {});
+      void video.play().catch(() => {
+        video.muted = true;
+        setIsMuted(true);
+        void video.play().catch(() => {});
+      });
     } else {
       video.pause();
     }
@@ -815,7 +823,11 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
     }
 
     if (video.paused) {
-      void video.play().catch(() => {});
+      void video.play().catch(() => {
+        video.muted = true;
+        setFinlandMuted(true);
+        void video.play().catch(() => {});
+      });
     } else {
       video.pause();
     }
@@ -916,10 +928,19 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
               autoPlay
               loop
               muted
+              onLoadedData={(event) => {
+                primeVideoCover(event.currentTarget);
+                setDuration(event.currentTarget.duration || 24);
+                setCurrentTime(event.currentTarget.currentTime);
+                setIsMuted(event.currentTarget.muted);
+              }}
+              onPause={() => setIsPlaying(false)}
+              onPlay={() => setIsPlaying(true)}
+              onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
               playsInline
-              preload="metadata"
+              preload="auto"
               poster="/preview/hokkaido-first-frame.jpg"
-              src="/api/media/hokkaido"
+              src={HOKKAIDO_VIDEO_SRC}
             />
             <div className="absolute inset-0 bg-black/10" />
           </>
@@ -947,10 +968,19 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
             autoPlay
             loop
             muted
+            onLoadedData={(event) => {
+              primeVideoCover(event.currentTarget);
+              setFinlandDuration(event.currentTarget.duration || 24);
+              setFinlandCurrentTime(event.currentTarget.currentTime);
+              setFinlandMuted(event.currentTarget.muted);
+            }}
+            onPause={() => setFinlandPlaying(false)}
+            onPlay={() => setFinlandPlaying(true)}
+            onTimeUpdate={(event) => setFinlandCurrentTime(event.currentTarget.currentTime)}
             playsInline
-            preload="metadata"
+            preload="auto"
             poster="/preview/finland-first-frame.jpg"
-            src="/api/media/finland"
+            src={FINLAND_VIDEO_SRC}
           />
           <div className="absolute inset-0 bg-black/10" />
         </>
@@ -1061,6 +1091,33 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
       onExplore: () => undefined,
     },
   ] as const;
+
+  const activeFullscreenPoster =
+    fullscreenDestination === "finland"
+      ? "/preview/finland-first-frame.jpg"
+      : "/preview/hokkaido-first-frame.jpg";
+
+  useEffect(() => {
+    if (!fullscreenDestination) {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      const video = fullscreenVideoRef.current;
+      if (!video) {
+        return;
+      }
+
+      primeVideoCover(video);
+      void video.play().catch(() => {
+        video.muted = true;
+        setFullscreenMuted(true);
+        void video.play().catch(() => {});
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [fullscreenDestination]);
 
   return (
     <div
@@ -1226,11 +1283,12 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
       </div>
 
       <div className="h-full bg-[#f6f5f2] md:hidden">
-        <div
-          className="relative flex h-full flex-col overflow-hidden bg-[#f6f5f2] text-gray-900"
-          onTouchEnd={handleShowcaseTouchEnd}
-          onTouchStart={handleShowcaseTouchStart}
-        >
+        {activeNav === "saved" ? (
+          <SavedTripsView />
+        ) : activeNav === "discover" ? (
+          <DiscoverJournalView />
+        ) : (
+        <div className="relative flex h-full flex-col overflow-hidden bg-[#f6f5f2] text-gray-900">
           <div className="flex-1 overflow-y-auto px-5 pb-[24rem] pt-10">
             <div className="mx-auto max-w-[360px]">
               <div className="mb-7 flex items-start justify-between">
@@ -1271,7 +1329,12 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
                 {destinations[activeDestinationIndex]?.title}
               </h3>
 
-              <div className="relative h-[322px] overflow-hidden">
+              <div
+                className="relative h-[322px] overflow-hidden"
+                onTouchEnd={handleShowcaseTouchEnd}
+                onTouchStart={handleShowcaseTouchStart}
+                style={{ touchAction: "pan-y" }}
+              >
                 {destinations.map((destination, index) => {
                   const isActiveDestination = activeDestinationIndex === index;
 
@@ -1352,43 +1415,44 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
               </div>
             </div>
           </div>
-
-          <nav className="pointer-events-auto fixed inset-x-0 bottom-7 z-40 flex justify-center px-6 md:hidden">
-            <div className="flex w-full max-w-[376px] items-center rounded-[32px] border border-[#d9dde6] bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(246,245,242,0.92)_100%)] px-4 py-3 backdrop-blur-2xl shadow-[0_22px_50px_-28px_rgba(15,23,42,0.24)]">
-              <button className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-[#a6acb7]" onClick={() => setActiveNav("home")} type="button">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-[18px] transition-colors ${activeNav === "home" ? "border border-[#d9dde6] bg-white text-[#202228] shadow-[0_10px_20px_-16px_rgba(0,0,0,0.18)]" : "text-[#a6acb7]"}`}>
-                  <IconSearch />
-                </div>
-                <span className={`text-[10px] font-medium ${activeNav === "home" ? "text-[#202228]" : "text-[#a6acb7]"}`}>{searchUiLabels.nav.home}</span>
-              </button>
-              <button className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-[#a6acb7]" onClick={() => setActiveNav("saved")} type="button">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-[18px] transition-colors ${activeNav === "saved" ? "border border-[#d9dde6] bg-white text-[#202228] shadow-[0_10px_20px_-16px_rgba(0,0,0,0.18)]" : "text-[#a6acb7]"}`}>
-                  <IconStar />
-                </div>
-                <span className={`text-[10px] font-medium ${activeNav === "saved" ? "text-[#202228]" : "text-[#a6acb7]"}`}>{searchUiLabels.nav.saved}</span>
-              </button>
-              <button className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-[#a6acb7]" onClick={() => setActiveNav("discover")} type="button">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-[18px] transition-colors ${activeNav === "discover" ? "border border-[#d9dde6] bg-white text-[#202228] shadow-[0_10px_20px_-16px_rgba(0,0,0,0.18)]" : "text-[#a6acb7]"}`}>
-                  <IconCompass />
-                </div>
-                <span className={`text-[10px] font-medium ${activeNav === "discover" ? "text-[#202228]" : "text-[#a6acb7]"}`}>{searchUiLabels.nav.discover}</span>
-              </button>
-              <button
-                className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-[#a6acb7]"
-                onClick={() => {
-                  setHomeChats(addNewSidebarChat());
-                  router.push("/home");
-                }}
-                type="button"
-              >
-                <div className="flex h-11 w-11 items-center justify-center rounded-[18px] text-[#a6acb7] transition-colors">
-                  <IconUser />
-                </div>
-                <span className="text-[10px] font-medium text-[#a6acb7]">Profile</span>
-              </button>
-            </div>
-          </nav>
         </div>
+        )}
+
+        <nav className="pointer-events-auto fixed inset-x-0 bottom-7 z-40 flex justify-center px-6 md:hidden">
+          <div className="flex w-full max-w-[376px] items-center rounded-[32px] border border-[#d9dde6] bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(246,245,242,0.92)_100%)] px-4 py-3 backdrop-blur-2xl shadow-[0_22px_50px_-28px_rgba(15,23,42,0.24)]">
+            <button className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-[#a6acb7]" onClick={() => setActiveNav("home")} type="button">
+              <div className={`flex h-11 w-11 items-center justify-center rounded-[18px] transition-colors ${activeNav === "home" ? "border border-[#d9dde6] bg-white text-[#202228] shadow-[0_10px_20px_-16px_rgba(0,0,0,0.18)]" : "text-[#a6acb7]"}`}>
+                <IconSearch />
+              </div>
+              <span className={`text-[10px] font-medium ${activeNav === "home" ? "text-[#202228]" : "text-[#a6acb7]"}`}>{searchUiLabels.nav.home}</span>
+            </button>
+            <button className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-[#a6acb7]" onClick={() => setActiveNav("saved")} type="button">
+              <div className={`flex h-11 w-11 items-center justify-center rounded-[18px] transition-colors ${activeNav === "saved" ? "border border-[#d9dde6] bg-white text-[#202228] shadow-[0_10px_20px_-16px_rgba(0,0,0,0.18)]" : "text-[#a6acb7]"}`}>
+                <IconStar />
+              </div>
+              <span className={`text-[10px] font-medium ${activeNav === "saved" ? "text-[#202228]" : "text-[#a6acb7]"}`}>{searchUiLabels.nav.saved}</span>
+            </button>
+            <button className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-[#a6acb7]" onClick={() => setActiveNav("discover")} type="button">
+              <div className={`flex h-11 w-11 items-center justify-center rounded-[18px] transition-colors ${activeNav === "discover" ? "border border-[#d9dde6] bg-white text-[#202228] shadow-[0_10px_20px_-16px_rgba(0,0,0,0.18)]" : "text-[#a6acb7]"}`}>
+                <IconCompass />
+              </div>
+              <span className={`text-[10px] font-medium ${activeNav === "discover" ? "text-[#202228]" : "text-[#a6acb7]"}`}>{searchUiLabels.nav.discover}</span>
+            </button>
+            <button
+              className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-[#a6acb7]"
+              onClick={() => {
+                setHomeChats(addNewSidebarChat());
+                router.push("/home");
+              }}
+              type="button"
+            >
+              <div className="flex h-11 w-11 items-center justify-center rounded-[18px] text-[#a6acb7] transition-colors">
+                <IconUser />
+              </div>
+              <span className="text-[10px] font-medium text-[#a6acb7]">Profile</span>
+            </button>
+          </div>
+        </nav>
       </div>
 
       {fullscreenDestination && activeFullscreenDossier ? (
@@ -1527,18 +1591,23 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
             {/* Hero video — top ~52% */}
             <div className="relative shrink-0" style={{ height: "52%" }}>
               <video
+                ref={fullscreenVideoRef}
                 aria-label={`${activeFullscreenDossier.title} destination film`}
                 autoPlay
                 className="h-full w-full object-cover"
+                controls
+                loop
                 muted={fullscreenMuted}
+                onLoadedData={(event) => primeVideoCover(event.currentTarget)}
                 playsInline
-                preload="metadata"
+                poster={activeFullscreenPoster}
+                preload="auto"
                 src={activeFullscreenDossier.src}
               />
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.54)_0%,rgba(0,0,0,0.02)_38%,rgba(0,0,0,0.64)_100%)]" />
 
               {/* Top bar */}
-              <div className="absolute inset-x-0 top-0 flex items-center justify-between px-5 pt-5">
+              <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between px-5 pt-5">
                 <div className="flex items-center gap-3">
                   <span className="rounded-full border border-white/18 bg-black/32 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.26em] text-white/88 backdrop-blur-md">
                     {activeFullscreenDossier.series}
@@ -1549,7 +1618,7 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
                 </div>
                 <button
                   aria-label="Close destination dossier"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-black/28 text-white/72 backdrop-blur-md transition active:bg-white/10"
+                  className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-black/28 text-white/72 backdrop-blur-md transition active:bg-white/10"
                   onClick={() => setFullscreenDestination(null)}
                   type="button"
                 >
@@ -1558,7 +1627,7 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
               </div>
 
               {/* Bottom overlay: title + headline + intro + unmute */}
-              <div className="absolute inset-x-0 bottom-0 px-5 pb-5">
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 px-5 pb-5">
                 <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.26em] text-white/50">
                   {activeFullscreenDossier.title}
                 </div>
@@ -1570,7 +1639,7 @@ export function WeaveSearchResultsPage({ query }: WeaveSearchResultsPageProps) {
                     {activeFullscreenDossier.intro}
                   </p>
                   <button
-                    className="flex shrink-0 items-center gap-2 rounded-full border border-white/16 bg-black/32 px-4 py-2 text-[12px] font-medium text-white/84 backdrop-blur-md transition active:bg-white/10"
+                    className="pointer-events-auto flex shrink-0 items-center gap-2 rounded-full border border-white/16 bg-black/32 px-4 py-2 text-[12px] font-medium text-white/84 backdrop-blur-md transition active:bg-white/10"
                     onClick={() => setFullscreenMuted((v) => !v)}
                     type="button"
                   >
